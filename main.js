@@ -88,7 +88,11 @@ class PolicyCard extends HTMLElement {
         cardDiv.appendChild(periodP);
 
         // Add details section if data exists
-        const detailsData = this.getAttribute('details') ? JSON.parse(this.getAttribute('details')) : null;
+        const detailsAttr = this.getAttribute('details');
+        console.log(`[PolicyCard] details attribute:`, detailsAttr);
+
+        const detailsData = detailsAttr ? JSON.parse(detailsAttr) : null;
+        console.log(`[PolicyCard] Parsed detailsData:`, detailsData);
 
         if (detailsData) {
             const detailsElement = document.createElement('details');
@@ -125,9 +129,16 @@ class PolicyCard extends HTMLElement {
                 }
             };
 
+            console.log(`[PolicyCard] detailsData.overview:`, detailsData.overview);
             createHeadingAndParagraph('개요', detailsData.overview, detailsContentDiv);
+            
+            console.log(`[PolicyCard] detailsData.budget_scale:`, detailsData.budget_scale);
             createHeadingAndParagraph('지원 예산 및 규모', detailsData.budget_scale, detailsContentDiv);
+            
+            console.log(`[PolicyCard] detailsData.support_content:`, detailsData.support_content);
             createHeadingAndList('지원 내용', detailsData.support_content, detailsContentDiv);
+            
+            console.log(`[PolicyCard] detailsData.process:`, detailsData.process);
             createHeadingAndList('사업 절차', detailsData.process, detailsContentDiv);
 
             if (detailsData.how_to_apply) {
@@ -165,6 +176,7 @@ class PolicyCard extends HTMLElement {
                     detailsContentDiv.appendChild(p);
                 }
             }
+            console.log(`[PolicyCard] detailsData.inquiry:`, detailsData.inquiry);
             createHeadingAndList('문의처', detailsData.inquiry, detailsContentDiv);
 
             detailsElement.appendChild(detailsContentDiv);

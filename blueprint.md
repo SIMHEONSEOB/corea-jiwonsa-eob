@@ -14,26 +14,21 @@
 ## 현재 변경 요청에 대한 계획 및 단계
 
 **요청:**
-1.  사이트 제목을 "국가 지원 사업 정보"에서 "대한민국 지원 사업"으로 변경.
-2.  기존 "주요 지원 사업" 목록을 제거하고 "창업 지원", "기술 및 금융 지원" 두 개의 새로운 목록으로 분리.
+1.  `main.js`의 `createHeadingAndParagraph` 및 `createHeadingAndList` 함수로 데이터가 제대로 불러와 지는지 확인 요청.
+2.  디버깅을 위해 콘솔 로그 추가 요청.
 
 **설명:**
-사용자 요청에 따라 웹 페이지의 구조와 데이터 표시 방식을 다음과 같이 변경했습니다.
+사용자님의 요청에 따라, `PolicyCard` 웹 컴포넌트 내에서 데이터가 올바르게 처리되고 있는지 확인하기 위해 `main.js` 파일에 `console.log` 디버깅 코드를 추가했습니다.
 
-1.  **`index.html` 변경:**
-    *   사이트의 메인 제목 (`<h1>`)을 "국가 지원 사업 정보"에서 "**대한민국 지원 사업**"으로 변경했습니다.
-    *   기존의 단일 `<section id="policy-list">`를 제거하고, "**창업 지원**"과 "**기술 및 금융 지원**"이라는 두 개의 새로운 `<section>`으로 분할했습니다. 각 섹션은 고유한 `id`와 `.card-container` 클래스(추가적으로 `startup-support-container`, `tech-finance-support-container` 클래스)를 가집니다.
-
-2.  **`main.js` 변경:**
-    *   `policyData` 배열 내의 각 정책 객체에 `category` 속성을 추가했습니다.
-        *   "예비창업패키지", "청년 창업 지원 사업"은 "**창업 지원**" 카테고리로 분류.
-        *   "소상공인 스마트 상점 기술 보급 사업", "중소기업 기술 혁신 개발 사업"은 "**기술 및 금융 지원**" 카테고리로 분류.
-    *   정책 데이터를 렌더링하는 로직을 업데이트했습니다. 이제 각 `policy-card`는 해당 `category`에 따라 `index.html`의 새로 생성된 `.startup-support-container` 또는 `.tech-finance-support-container`에 동적으로 추가됩니다.
-
-**결론:** 이제 웹 페이지에 접속하면 변경된 제목과 함께 "창업 지원" 및 "기술 및 금융 지원" 섹션에 해당 정책 카드들이 분류되어 표시될 것입니다.
+**변경 내용:**
+*   `main.js` 파일의 `PolicyCard` 웹 컴포넌트 `constructor` 내부에 다음과 같은 `console.log` 문을 추가했습니다:
+    *   `details` 속성의 원본 값 (`this.getAttribute('details')`)
+    *   `JSON.parse`를 거쳐 파싱된 `detailsData` 객체
+    *   `detailsData` 내의 `overview`, `budget_scale`, `support_content`, `process`, `how_to_apply`, `inquiry` 등 주요 필드의 값
 
 **확인 지침:**
-*   브라우저 캐시를 지우고 페이지를 새로고침하거나 개발 서버를 재시작해 보세요.
-*   웹 페이지에서 제목이 "대한민국 지원 사업"으로 변경되었는지 확인해 주세요.
-*   "창업 지원" 및 "기술 및 금융 지원" 섹션이 생겼는지, 그리고 각 섹션에 해당하는 정책 카드들이 올바르게 분류되어 표시되는지 확인해 주세요.
-*   각 카드의 "상세 정보 보기" 기능도 여전히 잘 작동하는지 확인해 주세요.
+*   브라우저에서 웹 페이지를 연 후, **개발자 도구(F12 또는 Ctrl+Shift+I)**를 열고 **Console (콘솔)** 탭을 확인해 주세요.
+*   `[PolicyCard]`라는 태그와 함께 출력되는 로그들을 확인하여, `details` 속성이 올바른 JSON 문자열로 전달되고 `detailsData`가 제대로 파싱되어 각 필드의 값들이 예상대로 출력되는지 확인해 주세요.
+*   특히, `detailsData`가 `null`이 아닌지, 그리고 `overview`, `budget_scale`, `support_content`, `process`, `how_to_apply`, `inquiry` 필드들이 비어있지 않고 올바른 데이터를 포함하고 있는지 확인해 주세요.
+
+이 로그들을 통해 데이터 처리 과정에 문제가 있는지 정확히 파악할 수 있습니다. 확인 후 콘솔 출력 결과를 알려주시면, 다음 단계를 진행하겠습니다.
