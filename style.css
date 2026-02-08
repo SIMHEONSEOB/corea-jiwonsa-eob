@@ -33,11 +33,49 @@ main {
     padding: 2rem;
 }
 
-#policy-list h2 {
+#national-support-section h2 {
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 2rem;
     font-size: 2rem;
+}
+
+.card {
+    background-color: var(--card-background-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    padding: 20px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.card p {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.card .button {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.card .button:hover {
+    background-color: #28a745;
 }
 
 .card-container {

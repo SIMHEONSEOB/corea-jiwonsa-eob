@@ -1,7 +1,12 @@
 class PolicyCard extends HTMLElement {
     constructor() {
         super();
-        const shadow = this.attachShadow({ mode: 'open' });
+        // Attach shadow DOM immediately in the constructor
+        this.attachShadow({ mode: 'open' });
+    }
+
+    connectedCallback() {
+        const shadow = this.shadowRoot; // Access the shadow DOM created in the constructor
 
         // Create style element and add to shadow DOM
         const style = document.createElement('style');
@@ -65,34 +70,37 @@ class PolicyCard extends HTMLElement {
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('card');
 
+        // Access attributes here, as they are available in connectedCallback
+        const title = this.getAttribute('title');
+        const description = this.getAttribute('description');
+        const target = this.getAttribute('target');
+        const period = this.getAttribute('period');
+
         const h3 = document.createElement('h3');
-        h3.textContent = this.getAttribute('title');
+        h3.textContent = title;
         cardDiv.appendChild(h3);
 
         const descriptionP = document.createElement('p');
-        descriptionP.textContent = this.getAttribute('description');
+        descriptionP.textContent = description;
         cardDiv.appendChild(descriptionP);
 
         const targetP = document.createElement('p');
         const targetStrong = document.createElement('strong');
         targetStrong.textContent = '지원 대상:';
         targetP.appendChild(targetStrong);
-        targetP.appendChild(document.createTextNode(` ${this.getAttribute('target')}`));
+        targetP.appendChild(document.createTextNode(` ${target}`));
         cardDiv.appendChild(targetP);
 
         const periodP = document.createElement('p');
         const periodStrong = document.createElement('strong');
         periodStrong.textContent = '신청 기간:';
         periodP.appendChild(periodStrong);
-        periodP.appendChild(document.createTextNode(` ${this.getAttribute('period')}`));
+        periodP.appendChild(document.createTextNode(` ${period}`));
         cardDiv.appendChild(periodP);
 
         // Add details section if data exists
         const detailsAttr = this.getAttribute('details');
-        console.log(`[PolicyCard] details attribute:`, detailsAttr);
-
         const detailsData = detailsAttr ? JSON.parse(detailsAttr) : null;
-        console.log(`[PolicyCard] Parsed detailsData:`, detailsData);
 
         if (detailsData) {
             const detailsElement = document.createElement('details');
@@ -103,81 +111,30 @@ class PolicyCard extends HTMLElement {
             const detailsContentDiv = document.createElement('div');
             detailsContentDiv.classList.add('details-content');
 
-            const createHeadingAndParagraph = (headingText, paragraphText, parent) => {
-                if (paragraphText) {
+            // Dynamic rendering of detailsData
+            for (const key in detailsData) {
+                if (detailsData.hasOwnProperty(key)) {
+                    const value = detailsData[key];
+
                     const h4 = document.createElement('h4');
-                    h4.textContent = headingText;
-                    parent.appendChild(h4);
-                    const p = document.createElement('p');
-                    p.textContent = paragraphText;
-                    parent.appendChild(p);
-                }
-            };
+                    h4.textContent = key; // Use the key as the heading
+                    detailsContentDiv.appendChild(h4);
 
-            const createHeadingAndList = (headingText, listItems, parent) => {
-                if (listItems && listItems.length > 0) {
-                    const h4 = document.createElement('h4');
-                    h4.textContent = headingText;
-                    parent.appendChild(h4);
-                    const ul = document.createElement('ul');
-                    listItems.forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = item;
-                        ul.appendChild(li);
-                    });
-                    parent.appendChild(ul);
-                }
-            };
-
-            console.log(`[PolicyCard] detailsData.overview:`, detailsData.overview);
-            createHeadingAndParagraph('개요', detailsData.overview, detailsContentDiv);
-            
-            console.log(`[PolicyCard] detailsData.budget_scale:`, detailsData.budget_scale);
-            createHeadingAndParagraph('지원 예산 및 규모', detailsData.budget_scale, detailsContentDiv);
-            
-            console.log(`[PolicyCard] detailsData.support_content:`, detailsData.support_content);
-            createHeadingAndList('지원 내용', detailsData.support_content, detailsContentDiv);
-            
-            console.log(`[PolicyCard] detailsData.process:`, detailsData.process);
-            createHeadingAndList('사업 절차', detailsData.process, detailsContentDiv);
-
-            if (detailsData.how_to_apply) {
-                const h4 = document.createElement('h4');
-                h4.textContent = '참여 방법';
-                detailsContentDiv.appendChild(h4);
-
-                if (detailsData.how_to_apply.announcement) {
-                    const p = document.createElement('p');
-                    const strong = document.createElement('strong');
-                    strong.textContent = '사업공고:';
-                    p.appendChild(strong);
-                    p.appendChild(document.createTextNode(` ${detailsData.how_to_apply.announcement}`));
-                    detailsContentDiv.appendChild(p);
-                }
-                if (detailsData.how_to_apply.method) {
-                    const p = document.createElement('p');
-                    const strong = document.createElement('strong');
-                    strong.textContent = '신청방법:';
-                    p.appendChild(strong);
-                    const link = document.createElement('a');
-                    link.href = "https://www.k-startup.go.kr";
-                    link.target = "_blank";
-                    link.textContent = detailsData.how_to_apply.method;
-                    p.appendChild(document.createTextNode(' '));
-                    p.appendChild(link);
-                    detailsContentDiv.appendChild(p);
-                }
-                if (detailsData.how_to_apply.required_docs) {
-                    const p = document.createElement('p');
-                    const strong = document.createElement('strong');
-                    strong.textContent = '제출서류:';
-                    p.appendChild(strong);
-                    p.appendChild(document.createTextNode(` ${detailsData.how_to_apply.required_docs}`));
-                    detailsContentDiv.appendChild(p);
+                    if (typeof value === 'string') {
+                        const p = document.createElement('p');
+                        p.textContent = value;
+                        detailsContentDiv.appendChild(p);
+                    } else if (Array.isArray(value)) {
+                        const ul = document.createElement('ul');
+                        value.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            ul.appendChild(li);
+                        });
+                        detailsContentDiv.appendChild(ul);
+                    }
                 }
             }
-            console.log(`[PolicyCard] detailsData.inquiry:`, detailsData.inquiry);
-            createHeadingAndList('문의처', detailsData.inquiry, detailsContentDiv);
 
             detailsElement.appendChild(detailsContentDiv);
             cardDiv.appendChild(detailsElement);
@@ -191,76 +148,83 @@ customElements.define('policy-card', PolicyCard);
 
 const policyData = [
     {
-        title: "예비창업패키지",
-        description: "혁신적인 기술창업 아이디어를 보유한 예비창업자의 창업 사업화 준비단계를 지원하여 성공적인 창업시장 안착 유도",
-        target: "예비창업자(공고일 기준 사업자(개인, 법인)등록 및 법인 설립등기를 하지 않은 자)",
-        period: "2026.2 월 말 예정 (사업공고)", // Using the first mentioned date for period
-        category: "창업 지원",
+        title: "지역별 민생지원금 지급 현황 (2026년 초 기준)",
+        description: "주요 지자체들은 설 명절(1~2월) 전후로 가계 경제 활성화를 위해 1인당 최소 20만 원에서 최대 60만 원까지 지급하고 있습니다.",
+        target: "각 지자체 주민 (공고일 기준)",
+        period: "2026년 초",
+        category: "전국민 지원 사업",
         details: {
-            overview: "혁신적인 기술창업 아이디어를 보유한 예비창업자의 창업 사업화 준비단계를 지원하여 성공적인 창업시장 안착 유도",
-            budget_scale: "491.25억원 (750명 내외)",
-            support_content: [
-                "사업화 자금, 창업프로그램 등",
-                "사업화자금: 시제품 제작, 마케팅, 지식재산권 출원·등록 등에 소요되는 사업화자금 최대 0.8억원 지원(중간평가를 통하여 단계별 사업비 차등지원)",
-                "창업프로그램: 주관기관의 강점과 특성을 반영하여 예비창업자를 지원하는 창업 프로그램 제공 (BM(비즈니스모델) 고도화, MVP(시제품) 제작 지원, 창업 교육 및 멘토링, 네트워킹 등)"
+            "충청권": [
+                "보은군: 60만 원 (1·2차 각 30만 원씩 분할 지급, 선불카드형)",
+                "영동군: 50만 원 (모든 군민 대상, 1월 1일 기준 주소지)",
+                "괴산군: 50만 원 (괴산사랑카드 충전 방식, 세대주 신청 원칙)",
+                "단양군: 20만 원 (카드형 지역화폐로 지원)"
             ],
-            process: [
-                "STEP 01: 사업공고 (’26.2 월 말 예정)",
-                "STEP 02: 신청·접수 (’26.2~3월 예정)",
-                "STEP 03: 선정평가 및 협약 (’26.4~5월 예정)",
-                "STEP 04: 사업비 지원 (’26.6월~ 예정)"
+            "전라권": [
+                "영광군: 100만 원 (연간 총액 기준 최다, 상·하반기 각 50만 원 지급)",
+                "남원시: 20만 원 (모든 시민(결혼이민자 포함) 대상, 현장 즉시 지급)",
+                "보성군: 30만 원 (지역화폐(보성사랑상품권)로 지급)",
+                "정읍시: 30만 원 (기존 지원금 외 추가 지급, 요일제 신청 적용)",
+                "순천시: 20만 원 (민생회복 소비쿠폰 성격으로 지급)"
             ],
-            how_to_apply: {
-                announcement: "’26.2 월 말 예정",
-                method: "K-Startup홈페이지(www.k-startup.go.kr)를 통한 온라인 신청·접수",
-                required_docs: "사업계획서, 증빙서류 등"
-            },
-            inquiry: [
-                "중소벤처기업부 신산업기술창업과: Tel. 044-204-7648, 7666",
-                "창업진흥원 예비재도전실: Tel. 044-410-1803, 1806~7, 1809"
+            "경상권": [
+                "군위군: 54만 원 (대구광역시 편입 후 독자적 파격 지원, 군위사랑상품권)",
+                "의성군: 30만 원 (카드형 지역화폐 지원)",
+                "울진군: 30~40만 원 (일반 30만 원, 취약계층은 최대 40만 원 차등 지원)"
             ]
         }
     },
     {
-        title: "청년 창업 지원 사업",
-        description: "혁신적인 아이디어를 가진 청년 창업가를 지원합니다.",
-        target: "만 19세 이상 39세 이하 청년",
-        period: "2024-01-01 ~ 2024-12-31",
-        category: "창업 지원"
+        title: "수도권 및 대도시 지원 특징",
+        description: "서울과 경기도 등 대도시는 전국민 일괄 현금 지급보다는 청년·소상공인·취약계층을 겨냥한 선별적 맞춤형 지원과 지역화폐 인센티브 확대에 집중하고 있습니다.",
+        target: "청년, 소상공인, 취약계층 등",
+        period: "2026년",
+        category: "전국민 지원 사업",
+        details: {
+            "경기도": [
+                "가평, 연천, 양평 등 인구 감소 지역 위주로 1인당 최대 30만 원 규모의 선별 지원을 추진하고 있습니다.",
+                "청년기본소득: 만 24세 청년에게 분기별 25만 원(연 100만 원)을 지역화폐로 계속 지원합니다."
+            ],
+            "서울시": "청년 월세 지원(연 최대 240만 원), 중장년 창업 지원 등 생애주기별 정책에 예산을 집중 투입합니다.",
+            "부산시": "지역화폐 '동백전'의 캐시백 비율을 상시 확대(최대 13%)하여 실질적인 소비 혜택을 제공합니다."
+        }
     },
     {
-        title: "소상공인 스마트 상점 기술 보급 사업",
-        description: "소상공인의 디지털 전환을 위한 스마트 기술 도입을 지원합니다.",
-        target: "소상공인",
-        period: "상시 접수",
-        category: "기술 및 금융 지원"
-    },
-    {
-        title: "중소기업 기술 혁신 개발 사업",
-        description: "중소기업의 기술 경쟁력 강화를 위한 R&D를 지원합니다.",
-        target: "중소기업",
-        period: "2024-03-01 ~ 2024-04-30",
-        category: "기술 및 금융 지원"
+        title: "신청 방법 및 유의사항",
+        description: "민생지원금 신청 방법과 주요 유의사항을 확인하세요.",
+        target: "지원금 신청 대상자",
+        period: "2026년",
+        category: "전국민 지원 사업",
+        details: {
+            "신청처": "주소지 관할 읍·면·동 행정복지센터 방문 또는 각 지자체 홈페이지(예: 소상공인24, 정부24)를 통해 가능합니다.",
+            "지급 대상": "대부분 전년도 말(12월 31일) 혹은 지급 공고일 기준 해당 지역에 주민등록이 되어 있는 주민을 대상으로 합니다.",
+            "사용처": "대형마트나 온라인몰을 제외한 지역 내 소상공인 가맹점에서만 사용 가능하며, 기한 내 미사용 시 잔액은 자동 소멸됩니다."
+        }
     }
 ];
 
-const startupSupportContainer = document.querySelector('.startup-support-container');
-const techFinanceSupportContainer = document.querySelector('.tech-finance-support-container');
+// Encapsulate the rendering logic within DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.national-support-container');
 
-policyData.forEach(policy => {
-    const policyCard = document.createElement('policy-card');
-    policyCard.setAttribute('title', policy.title);
-    policyCard.setAttribute('description', policy.description);
-    policyCard.setAttribute('target', policy.target);
-    policyCard.setAttribute('period', policy.period);
-    // Pass the entire details object as a JSON string
-    if (policy.details) {
-        policyCard.setAttribute('details', JSON.stringify(policy.details));
-    }
+    console.log(`[main.js] national-support-container (inside DOMContentLoaded):`, container);
 
-    if (policy.category === "창업 지원") {
-        startupSupportContainer.appendChild(policyCard);
-    } else if (policy.category === "기술 및 금융 지원") {
-        techFinanceSupportContainer.appendChild(policyCard);
+    if (container) {
+        policyData.forEach(policy => {
+            const policyCard = document.createElement('policy-card');
+            policyCard.setAttribute('title', policy.title);
+            policyCard.setAttribute('description', policy.description);
+            policyCard.setAttribute('target', policy.target);
+            policyCard.setAttribute('period', policy.period);
+            
+            if (policy.details) {
+                policyCard.setAttribute('details', JSON.stringify(policy.details));
+            }
+
+            console.log(`[main.js] Appending '${policy.title}' to national-support-container`);
+            container.appendChild(policyCard);
+        });
+    } else {
+        console.error(`[main.js] national-support-container not found!`);
     }
 });
