@@ -74,11 +74,17 @@ class PolicyCard extends HTMLElement {
         cardDiv.appendChild(descriptionP);
 
         const targetP = document.createElement('p');
-        targetP.innerHTML = `<strong>지원 대상:</strong> ${this.getAttribute('target')}`;
+        const targetStrong = document.createElement('strong');
+        targetStrong.textContent = '지원 대상:';
+        targetP.appendChild(targetStrong);
+        targetP.appendChild(document.createTextNode(` ${this.getAttribute('target')}`));
         cardDiv.appendChild(targetP);
 
         const periodP = document.createElement('p');
-        periodP.innerHTML = `<strong>신청 기간:</strong> ${this.getAttribute('period')}`;
+        const periodStrong = document.createElement('strong');
+        periodStrong.textContent = '신청 기간:';
+        periodP.appendChild(periodStrong);
+        periodP.appendChild(document.createTextNode(` ${this.getAttribute('period')}`));
         cardDiv.appendChild(periodP);
 
         // Add details section if data exists
@@ -99,7 +105,7 @@ class PolicyCard extends HTMLElement {
                     h4.textContent = headingText;
                     parent.appendChild(h4);
                     const p = document.createElement('p');
-                    p.innerHTML = paragraphText; // Using innerHTML here for potential bold tags from data
+                    p.textContent = paragraphText;
                     parent.appendChild(p);
                 }
             };
@@ -112,7 +118,7 @@ class PolicyCard extends HTMLElement {
                     const ul = document.createElement('ul');
                     listItems.forEach(item => {
                         const li = document.createElement('li');
-                        li.innerHTML = item; // Using innerHTML here for potential bold tags from data
+                        li.textContent = item;
                         ul.appendChild(li);
                     });
                     parent.appendChild(ul);
@@ -131,7 +137,10 @@ class PolicyCard extends HTMLElement {
 
                 if (detailsData.how_to_apply.announcement) {
                     const p = document.createElement('p');
-                    p.innerHTML = `<strong>사업공고:</strong> ${detailsData.how_to_apply.announcement}`;
+                    const strong = document.createElement('strong');
+                    strong.textContent = '사업공고:';
+                    p.appendChild(strong);
+                    p.appendChild(document.createTextNode(` ${detailsData.how_to_apply.announcement}`));
                     detailsContentDiv.appendChild(p);
                 }
                 if (detailsData.how_to_apply.method) {
@@ -143,13 +152,16 @@ class PolicyCard extends HTMLElement {
                     link.href = "https://www.k-startup.go.kr";
                     link.target = "_blank";
                     link.textContent = detailsData.how_to_apply.method;
-                    p.appendChild(document.createTextNode(' ')); // Add space between strong and link
+                    p.appendChild(document.createTextNode(' '));
                     p.appendChild(link);
                     detailsContentDiv.appendChild(p);
                 }
                 if (detailsData.how_to_apply.required_docs) {
                     const p = document.createElement('p');
-                    p.innerHTML = `<strong>제출서류:</strong> ${detailsData.how_to_apply.required_docs}`;
+                    const strong = document.createElement('strong');
+                    strong.textContent = '제출서류:';
+                    p.appendChild(strong);
+                    p.appendChild(document.createTextNode(` ${detailsData.how_to_apply.required_docs}`));
                     detailsContentDiv.appendChild(p);
                 }
             }
@@ -171,6 +183,7 @@ const policyData = [
         description: "혁신적인 기술창업 아이디어를 보유한 예비창업자의 창업 사업화 준비단계를 지원하여 성공적인 창업시장 안착 유도",
         target: "예비창업자(공고일 기준 사업자(개인, 법인)등록 및 법인 설립등기를 하지 않은 자)",
         period: "2026.2 월 말 예정 (사업공고)", // Using the first mentioned date for period
+        category: "창업 지원",
         details: {
             overview: "혁신적인 기술창업 아이디어를 보유한 예비창업자의 창업 사업화 준비단계를 지원하여 성공적인 창업시장 안착 유도",
             budget_scale: "491.25억원 (750명 내외)",
@@ -200,23 +213,27 @@ const policyData = [
         title: "청년 창업 지원 사업",
         description: "혁신적인 아이디어를 가진 청년 창업가를 지원합니다.",
         target: "만 19세 이상 39세 이하 청년",
-        period: "2024-01-01 ~ 2024-12-31"
+        period: "2024-01-01 ~ 2024-12-31",
+        category: "창업 지원"
     },
     {
         title: "소상공인 스마트 상점 기술 보급 사업",
         description: "소상공인의 디지털 전환을 위한 스마트 기술 도입을 지원합니다.",
         target: "소상공인",
-        period: "상시 접수"
+        period: "상시 접수",
+        category: "기술 및 금융 지원"
     },
     {
         title: "중소기업 기술 혁신 개발 사업",
         description: "중소기업의 기술 경쟁력 강화를 위한 R&D를 지원합니다.",
         target: "중소기업",
-        period: "2024-03-01 ~ 2024-04-30"
+        period: "2024-03-01 ~ 2024-04-30",
+        category: "기술 및 금융 지원"
     }
 ];
 
-const cardContainer = document.querySelector('.card-container');
+const startupSupportContainer = document.querySelector('.startup-support-container');
+const techFinanceSupportContainer = document.querySelector('.tech-finance-support-container');
 
 policyData.forEach(policy => {
     const policyCard = document.createElement('policy-card');
@@ -228,5 +245,10 @@ policyData.forEach(policy => {
     if (policy.details) {
         policyCard.setAttribute('details', JSON.stringify(policy.details));
     }
-    cardContainer.appendChild(policyCard);
+
+    if (policy.category === "창업 지원") {
+        startupSupportContainer.appendChild(policyCard);
+    } else if (policy.category === "기술 및 금융 지원") {
+        techFinanceSupportContainer.appendChild(policyCard);
+    }
 });
