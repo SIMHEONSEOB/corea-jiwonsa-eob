@@ -41,6 +41,12 @@ customElements.define('policy-card', PolicyCard);
 
 const policyData = [
     {
+        title: "예비창업패키지",
+        description: "사업화 자금(최대 1억원), 창업프로그램 등을 지원합니다.",
+        target: "공고일 기준 창업경험이 없거나 신청자 명의의 사업자 등록이 없는 자",
+        period: "2024년 상반기"
+    },
+    {
         title: "청년 창업 지원 사업",
         description: "혁신적인 아이디어를 가진 청년 창업가를 지원합니다.",
         target: "만 19세 이상 39세 이하 청년",
